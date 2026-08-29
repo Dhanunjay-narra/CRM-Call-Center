@@ -8,7 +8,6 @@ from app.core.base_models import Base
 from app.core.database import get_db
 from app.main import app
 
-# Use in-memory SQLite for high-speed, isolated test runs
 TEST_DATABASE_URL = "sqlite+aiosqlite:///:memory:"
 
 test_engine = create_async_engine(TEST_DATABASE_URL, echo=False)
@@ -56,3 +55,19 @@ async def client(db_session: AsyncSession) -> AsyncClient:
         yield ac
 
     app.dependency_overrides.clear()
+
+
+@pytest_asyncio.fixture(scope="function")
+async def auth_headers(client: AsyncClient) -> dict:
+    """Provides authenticated bearer headers for tests"""
+    res = await client.post("/api/v1/auth/register", json={
+        "organization_name": "Test Global Corp",
+        "full_name": "Test Admin",
+        "email": "testadmin@globalcorp.com",
+        "password": "Password123!",
+        "phone_number": "+15551234567"
+    })
+    if res.status_code == 201:
+        token = res.json()["access_token"]
+        return {"Authorization": f"Bearer {token}"}
+    return {}
