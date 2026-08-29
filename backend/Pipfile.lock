@@ -1,0 +1,16 @@
+{
+    "_meta": {
+        "hash": {"sha256": "4b684535359a35e478546b306b63ef26ad1676de38cba09446d30ea922c2a383"},
+        "pipfile-spec": 6,
+        "requires": {"python_version": "3.12"},
+        "sources": [{"name": "pypi", "url": "https://pypi.org/simple", "verify_ssl": true}]
+    },
+    "default": {
+        "fastapi": {"version": "==0.115.0"},
+        "uvicorn": {"version": "==0.30.6"},
+        "sqlalchemy": {"version": "==2.0.35"},
+        "pydantic": {"version": "==2.9.2"},
+        "pytest": {"version": "==9.1.1"}
+    },
+    "develop": {}
+}
