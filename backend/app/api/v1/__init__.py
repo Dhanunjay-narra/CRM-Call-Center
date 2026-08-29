@@ -8,6 +8,7 @@ from app.routing.router import router as routing_router
 from app.communications.router import router as communications_router
 from app.support.router import router as support_router
 from app.automation.router import router as automation_router
+from app.qa_feedback.router import router as qa_feedback_router
 
 api_router = APIRouter()
 api_router.include_router(health_router, tags=["Health"])
@@ -19,3 +20,4 @@ api_router.include_router(routing_router, tags=["Routing & IVR"])
 api_router.include_router(communications_router, tags=["Omnichannel Communications"])
 api_router.include_router(support_router, tags=["Customer Support & SLA"])
 api_router.include_router(automation_router, tags=["Workflow Automation"])
+api_router.include_router(qa_feedback_router, tags=["QA & Customer Feedback"])
