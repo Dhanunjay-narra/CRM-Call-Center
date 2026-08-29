@@ -1,4 +1,5 @@
 from typing import List, Optional
+from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, and_
@@ -13,6 +14,7 @@ from app.core.security import (
     ROLE_PERMISSIONS
 )
 from app.identity.models import Organization, Department, Team, User, UserStatus
+from app.telephony.models import AgentProfile, AgentState
 from app.identity.schemas import (
     UserRegisterRequest,
     UserLoginRequest,
@@ -79,7 +81,6 @@ async def refresh_token(req: RefreshTokenRequest, db: AsyncSession = Depends(get
 async def request_otp(req: OTPRequest, db: AsyncSession = Depends(get_db)):
     """Request OTP for login or verification"""
     code = await IdentityService.request_otp(db, req.email, req.phone_number, req.purpose)
-    # In development/simulator mode, return code in response
     return {"message": "OTP sent successfully", "debug_code": code}
 
 
@@ -247,7 +248,7 @@ async def create_user(
     auth: TokenPayload = Depends(PermissionChecker(["user.manage"])),
     db: AsyncSession = Depends(get_db)
 ):
-    """Create a new user account with assigned role and department"""
+    """Create a new user account with assigned role and department, and initialize Agent Profile if agent"""
     existing = await db.execute(select(User).where(User.email == req.email))
     if existing.scalar_one_or_none():
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User email already exists")
@@ -269,6 +270,19 @@ async def create_user(
         is_verified=True
     )
     db.add(user)
+    await db.flush()
+
+    # Automatically provision AgentProfile for agent/supervisor/admin roles
+    agent_prof = AgentProfile(
+        organization_id=auth.organization_id,
+        user_id=user.id,
+        skills=["Sales", "General Support"],
+        languages=["en", req.language],
+        current_state=AgentState.AVAILABLE,
+        state_changed_at=datetime.now(timezone.utc)
+    )
+    db.add(agent_prof)
+
     await db.commit()
     await db.refresh(user)
     return user
