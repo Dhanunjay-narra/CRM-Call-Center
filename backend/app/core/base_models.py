@@ -1,8 +1,8 @@
 import uuid
 from datetime import datetime, timezone
 from typing import Any, Dict
-from sqlalchemy import Column, String, DateTime, Boolean, JSON
-from sqlalchemy.orm import DeclarativeBase, declared_attr
+from sqlalchemy import Column, String, DateTime, Boolean, JSON, ForeignKey
+from sqlalchemy.orm import DeclarativeBase
 
 
 def generate_uuid() -> str:
@@ -47,8 +47,8 @@ class CoreBaseModel(Base):
 class TenantBaseModel(CoreBaseModel):
     """
     Base model for all tenant-scoped CRM and Call Center entities.
-    Enforces multi-tenancy via organization_id.
+    Enforces multi-tenancy via organization_id with foreign key.
     """
     __abstract__ = True
 
-    organization_id = Column(String(36), nullable=False, index=True)
+    organization_id = Column(String(36), ForeignKey("organizations.id", ondelete="CASCADE"), nullable=False, index=True)
