@@ -10,6 +10,7 @@ from app.support.router import router as support_router
 from app.automation.router import router as automation_router
 from app.qa_feedback.router import router as qa_feedback_router
 from app.analytics.router import router as analytics_router
+from app.audit.router import router as audit_router
 
 api_router = APIRouter()
 api_router.include_router(health_router, tags=["Health"])
@@ -23,3 +24,4 @@ api_router.include_router(support_router, tags=["Customer Support & SLA"])
 api_router.include_router(automation_router, tags=["Workflow Automation"])
 api_router.include_router(qa_feedback_router, tags=["QA & Customer Feedback"])
 api_router.include_router(analytics_router, tags=["Analytics & Global Search"])
+api_router.include_router(audit_router, tags=["Audit & Security"])

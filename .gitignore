@@ -59,3 +59,13 @@ backend/callsphere.db
 uploads/
 recordings/
 *.sqlite3
+
+# Ignore nested clone artifacts
+git1/
+git2/
+git3/
+git4/
+git5/
+git6/
+git7/
+
